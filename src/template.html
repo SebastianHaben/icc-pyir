@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+        html, body {
+            width: 500px;
+            font-size: 12px;
+            background: #fff;
+            padding: 0;
+        }
+        #my-custom-table {
+            width: 500px;
+            border: 0;
+            margin-top: 20px;
+        }
+        #my-custom-table td {
+            padding: 5px 0px 1px 5px;
+            text-align: left;
+        }
+        .img-container{
+            text-align: center;
+        }
+        figcaption {text-align: center;}
+    </style>
+</head>
+<body>
+    <table cellspacing="0" style="width: 500px; border: 0; font-size: 10px">
+        <tr>
+            <td style="text-align: left;">{{date_analysed}}</td>
+            <td style="text-align: right">py_ir-version: {{short_git_sha}}</td>
+        </tr>
+    </table>
+<br>
+<h2>1. General info</h2>
+<br>
+<table cellspacing="0" border="0" id="general_info table" frame="border" align="center">
+<tr>
+    <td><b>Material ID:</b></td>
+    <td>{{material_id}}</td>
+</tr>
+<tr>
+    <td><b>Sample weight:</b></td>
+    <td>{{sample_weight}}</td>
+</tr>
+<tr>
+    <td><b>Sample radius:</b></td>
+    <td>{{sample_radius}}</td>
+</tr>
+<tr>
+    <td><b>Date recorded:</b></td>
+    <td>{{date_recorded}}</td>
+</tr>
+<tr>
+    <td><b>Date analysed:</b></td>
+    <td>{{date_analysed}}</td>
+</tr>
+    {% if normalization%}
+    <tr>
+        <td>Pre-adsorption normalization band:</td>
+        <td>{{normalization.pre}}</td>
+    </tr>
+    <tr>
+        <td>Post-adsorption normalization band:</td>
+        <td>{{normalization.post}}</td>
+    </tr>
+    {% endif%}
+<tr>
+    <td><b>BAS sites:</b></td>
+    <td>{{bas_sites}}</td>
+</tr>
+<tr>
+    <td><b>LAS sites:</b></td>
+    <td>{{las_sites}}</td>
+</tr>
+    </table>
+<h2>2. Raw Data:</h2>
+    <div class="img-container">
+    <figure>
+        <img src="{{raw_data_plot.plot}}">
+        <br>
+        <figcaption style="text-align: center">{{raw_data_plot.caption}}</figcaption>
+    </figure></div>
+<p style="page-break-before: always">
+    {% if normalization%}
+<h2>3. Normalization</h2>
+    <div class="img-container">
+     <figure>
+        <img src="{{norm_data_plot.plot}}">
+         <br>
+        <figcaption style="text-align: center">{{norm_data_plot.caption}}</figcaption>
+    </figure></div>
+    <p style="page-break-before: always">
+ {% endif%}
+<h2>{{fitting_numb}}. Fitting</h2>
+    <div class="img-container">
+     <figure>
+        <img src="{{fitting_data_plot.plot}}", style="horiz-align: center">
+         <br>
+        <figcaption style="horiz-align: center">{{fitting_data_plot.caption}}</figcaption>
+    </figure></div>
+    <br>
+    <br>
+    <table cellspacing="0" border="0" id="fitting table" frame="border" align="center">
+        <tr>
+            <th>Acid site</th>
+            <th>Χ²</th>
+            <th>red. Χ²</th>
+        </tr>
+        <tr>
+            <td><b>BAS</b></td>
+            <td>{{bas.chi_sq}}</td>
+            <td>{{bas.red_chi_sq}}</td>
+        </tr>
+        <tr>
+            <td><b>LAS</b></td>
+            <td>{{las.chi_sq}}</td>
+            <td>{{las.red_chi_sq}}</td>
+        </tr>
+    </table>
+    <p style="page-break-before: always">
+</body>
+</html>
