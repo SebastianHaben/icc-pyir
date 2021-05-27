@@ -14,7 +14,7 @@ from scipy import signal, integrate
 from fitting import gaussian, gaussian_fitting, create_lin_baseline_between_endpoints
 from errors import NormalizationError, WavenumberArrayShapeMissMatch, PositionWarning, WrongFileType, \
     NoPeaksFoundError, ExperimentNoMatch
-from reader import *
+from reader import SPAReader, CSVReader, np
 from requests import Request
 
 
@@ -150,19 +150,21 @@ class Analyser:
             -------
             TypeError:
                 If neither a Request object nor a file path was provided.
-            ExperimentNoMatch:
+            Warns:
+            ------
+            UserWarning:
                 If date of measurement is not identical between pre- and post adsorption file.
             """
         if isinstance(post_adsorption_request_uri, Request):
             post_adsorption_request = post_adsorption_request_uri
-        elif os.path.exists(pre_adsorption_request_uri):
+        elif os.path.exists(post_adsorption_request_uri):
             post_adsorption_request = Request(post_adsorption_request_uri)
         else:
             raise TypeError("Please either provide a Request object or a file path")
         date_measured = datetime.datetime.strptime(time.ctime(
             os.path.getmtime(post_adsorption_request.abs_file_path)), "%a %b %d %H:%M:%S %Y").date()
         if date_measured != self.date_measured.date():
-            raise ExperimentNoMatch
+            warnings.warn('The measuremnt day for files is not identical!', UserWarning)
         self.post_adsorption_wavenumbers, self.post_adsorption_data = self._get_reader_get_data(post_adsorption_request)
         self.post_adsorption_request = post_adsorption_request
 
