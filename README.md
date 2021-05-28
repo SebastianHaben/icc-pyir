@@ -7,13 +7,14 @@ Prerequisites:
 * Python >=3.7
 
 Dependencies:
+The code was tested under Win10 using the following dependencies with their respective versions.
 
-* jinja2
-* lmfit
-* matplotlib
-* numpy
-* scipy
-* xhtml2pdf
+* jinja2 = 2.10
+* lmfit = 0.9.15
+* matplotlib = 3.1.1
+* numpy = 1.17.2
+* scipy = 1.2.0
+* xhtml2pdf = 0.2.5
 
 To install using git:
 
