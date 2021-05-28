@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from xhtml2pdf import pisa
 
-from utils.errors import ExperimentNoMatch, ExperimentMissMatch
+from errors import ExperimentNoMatch, ExperimentMissMatch
 
 
 class PDFReport:
@@ -16,12 +16,8 @@ class PDFReport:
         -----------
         analyser : utils.analyser.Analyser
             Analyser object of the experiment.
-        date : datetime.date
-            Date when the experiment was performed.
-        experiment_id : str
+        material_id : str
             ID of the experiment.
-        short_git_sha : str
-            First 8 characters of the Git SHA-key.
 
         Attributes:
         -----------
@@ -41,8 +37,6 @@ class PDFReport:
             Indication if the peak section variable is available.
         fitting_section : bol
             Indication if the fitting section variable is available.
-        short_git_sha : str
-            First 8 characters of the Git SHA-key.
 
         Methods:
         -------
@@ -54,13 +48,12 @@ class PDFReport:
             Automatically finds experiment ID based on automatic search in file name ore uses provided experiment_id.
         """
 
-    def __init__(self, analyser, short_git_sha='No version specified'):
+    def __init__(self, analyser, material_id):
         self.analysed_dt = datetime.datetime.now()
         self.analyser = analyser
-        self.material_id = analyser.material_id
+        self.material_id = material_id
         self.recorded_dt = analyser.date_measured
         self.html = None
-        self.short_git_sha = short_git_sha
 
     def build_report(self, include_norm=False):
         """Builds PDF report.
@@ -83,22 +76,20 @@ class PDFReport:
             norm_data_plot = {'plot': os.path.abspath('.\\images\\norm.png'),
                               'caption': 'Normalized FT-IR spectrum pre- and post-pyridine '
                                          'adsorption'}
-            html = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='.\\utils')).\
+            html = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='.')).\
                 get_template('template.html').render(
                     date_analysed=self.analysed_dt.strftime('%d.%m.%Y'),
                     date_recorded=self.recorded_dt.strftime('%d.%m.%Y'),
-                    short_git_sha=self.short_git_sha, material_id=self.material_id,
                     sample_weight=str(round(self.analyser.sample_weight, 4)) + ' g',
                     sample_radius=str(round(self.analyser.sample_disk_radius, 3)) + ' g',
                     bas_sites=str(round(self.analyser.bas['acid sites'], 2)) + ' mmol/g',
                     las_sites=str(round(self.analyser.las['acid sites'])) + ' mmol/g', raw_data_plot=raw_data_plot,
                     norm_data_plot=norm_data_plot, fitingt_data_plot=fit_data_plot, fitting_numb=4, bas=bas, las=las)
         else:
-            html = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='.\\utils')).get_template(
+            html = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='.')).get_template(
                 'template.html').render(
                 date_analysed=self.analysed_dt.strftime('%d.%m.%Y'),
                 date_recorded=self.recorded_dt.strftime('%d.%m.%Y'),
-                short_git_sha=self.short_git_sha, material_id=self.material_id,
                 ssample_weight=str(round(self.analyser.sample_weight, 4)) + ' g',
                     sample_radius=str(round(self.analyser.sample_disk_radius, 3)) + ' g',
                 bas_sites=str(round(self.analyser.bas['acid sites'], 2))+' mmol/g',
@@ -109,7 +100,7 @@ class PDFReport:
     def save_report(self):
         """Saves the report as .pdf file"""
         dir_path = os.path.join("")
-        file_path = os.path.join(dir_path, '_'.join([self.material_id, 'report', self.short_git_sha]) + '.pdf')
+        file_path = os.path.join(dir_path, '_'.join([self.material_id, 'report' + '.pdf')
         with open(file_path, 'w+b') as pdf:
             pisa.CreatePDF(src=self.html, dest=pdf)
 
