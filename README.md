@@ -1,3 +1,4 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/SebastianHaben/icc-pyir/master)
 # icc-pyir
 This project's aim is to analyse Pyridine IR data by caluculating the BAS and LAS density of the material. icc-pyr takes a pre- and post-adsorption spectrum as input and can create a PDF report.   
 
