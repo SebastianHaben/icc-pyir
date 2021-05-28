@@ -127,6 +127,7 @@ class Analyser:
             TypeError:
                 If neither a Request object nor a file path was provided.
             """
+        # Checking if we can use the provided URI
         if isinstance(pre_adsorption_request_uri, Request):
             pre_adsorption_request = pre_adsorption_request_uri
         elif os.path.exists(pre_adsorption_request_uri):
@@ -135,6 +136,8 @@ class Analyser:
             raise TypeError("Please either provide a Request object or a file path")
         self.pre_adsorption_wavenumbers, self.pre_adsorption_data = self._get_reader_get_data(pre_adsorption_request)
         self.pre_adsorption_request = pre_adsorption_request
+        # Checking the last modified date, which usually is the measurment date to check 
+        # if the pre- and post-adsorption spectra where recorded on the same day
         self.date_measured = datetime.datetime.strptime(time.ctime(
             os.path.getmtime(pre_adsorption_request.abs_file_path)), "%a %b %d %H:%M:%S %Y")
 
@@ -155,12 +158,16 @@ class Analyser:
             UserWarning:
                 If date of measurement is not identical between pre- and post adsorption file.
             """
+        # Checking if we can use the provided URI
         if isinstance(post_adsorption_request_uri, Request):
             post_adsorption_request = post_adsorption_request_uri
         elif os.path.exists(post_adsorption_request_uri):
             post_adsorption_request = Request(post_adsorption_request_uri)
         else:
             raise TypeError("Please either provide a Request object or a file path")
+        # Checking the last modified date, which usually is the measurment date to check 
+        # if the pre- and post-adsorption spectra where recorded on the same day and 
+        # warn user if this is not the case
         date_measured = datetime.datetime.strptime(time.ctime(
             os.path.getmtime(post_adsorption_request.abs_file_path)), "%a %b %d %H:%M:%S %Y").date()
         if date_measured != self.date_measured.date():
@@ -198,7 +205,9 @@ class Analyser:
             ---------
             PositionWarning:
                 If wavenumbers of pre- and post-adsorption spectra aren't equal."""
+        # Checking if the wavenumber array sizes are equal to avoid errors during fitting
         if self.pre_adsorption_wavenumbers.size == self.post_adsorption_wavenumbers.size:
+            # Cheking if the wavenumbers are equal to avoid problems during fitting.
             if np.array_equal(self.pre_adsorption_wavenumbers, self.post_adsorption_wavenumbers):
                 if normalization:
                     self.difference_spectra_data = self.norm_post_adsorption_data - self.norm_pre_adsorption_data
@@ -218,16 +227,16 @@ class Analyser:
         else:
             raise WavenumberArrayShapeMissMatch()
 
-    def find_py_adsorption_peaks(self, py_adsorption_band_guess, search_window_size):
+    def find_py_adsorption_peaks(self, py_adsorption_band_guess=[1455., 1546.], search_window_size=[40, 70]):
         """Detects the bands originating in pyridine adsorption.
 
             Parameters:
             -----------
             py_adsorption_band_guess : list of float
-                List of band positions as floats.
+                List of band positions as floats. Defaults [1455., 1546.]. 
             search_window_size : list of floats
                 List of values of how big the search area around each peak is as floats. The index of the window size is
-                identical to the index of the band guess in py_adsorption_band_guess
+                identical to the index of the band guess in py_adsorption_band_guess. Defaults [40, 70]
             wavenumber_array : np.array
                 Array of recorded wavenumbers
             data : np.array
@@ -242,6 +251,7 @@ class Analyser:
         rois = {}
         rois_data_list = []
         py_peaks = []
+        # To find peaks a region of intrest is defined to avoid detection of unwanted peaks
         for band in py_adsorption_band_guess:
             band_index = py_adsorption_band_guess.index(band)
             roi_index = (np.abs(self.difference_spectra_wavenumbers-band)).argmin()
@@ -255,7 +265,7 @@ class Analyser:
             peaks = signal.find_peaks(roi['data'], prominence=0.1)
             try:
                 peak = roi['wavenumbers'][peaks[0][0]]
-            # Try to find peaks with lower prominence
+            # Try to find peaks with lower prominence if normal prominence doesn't work
             except IndexError:
                 peaks = signal.find_peaks(roi['data'], prominence=0.01)
                 try:
@@ -271,6 +281,8 @@ class Analyser:
         """Fits the individual ROIs data to individual Gauss functions that can be integrated."""
         for band, roi in self.rois.items():
             band_index = list(roi['wavenumbers']).index(band)
+            # For simple background correction a valley-to-valley basleine correction is simulated
+            # by using a linear baseline between the two endpoints of the ROI
             corrected_data, baseline = create_lin_baseline_between_endpoints(roi['wavenumbers'], roi['data'])
             corrected_band_height = corrected_data[band_index]
             result = gaussian_fitting(roi['wavenumbers'], corrected_data, band, corrected_band_height)
@@ -335,6 +347,7 @@ class Analyser:
         if abs(normalization_band_guess-calculated_band_position) < 10:
             normalized_data = data/data[index_guess]
             return calculated_band_position, normalized_data
+        # Backup if prominence of first peak is not enough
         else:
             peaks = signal.find_peaks(data, prominence=0.01)
             index_guess = (np.abs(wavenumber_array[peaks[0]] - normalization_band_guess)).argmin()
@@ -358,7 +371,6 @@ class Analyser:
             --------
             reader : reader.Reader subclass
                 Suitable reader object for the file type."""
-
         if request.extension in ['.spa', '.SPA', '.srs']:
             reader = SPAReader(request)
         elif request.extension in ['.csv', '.CSV']:

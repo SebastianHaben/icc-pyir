@@ -1,8 +1,9 @@
 # exclude compiled binaries and external models
 /bin
-/__pycache__
+/src/__pycache__
 
 # exclude data from source control by default
 /data/temp
 /data/processed
 /data/raw
+.vscode/settings.json
