@@ -25,19 +25,30 @@ icc-pyir is centered around the `Analyser` class. Firstly, load the import it fr
 from analyser import Analyser
 pyr_analyser = Analyser()
 ```
+
 Afterwards, we add a pre-adsorption and postadrosption spectrum.
+```
     pyr_analyser.add_pre_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_pre_adsorption.SPA")
     pyr_analyser.add_post_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_post_adsorption.SPA")
+```
+
 If you want you can add a normailzation step by using the `normalize_spectra` function and providing a band guess. This step is optional.
 Next we need we create the difference spectrum and find the pyridine bands and a search window where they should roughly be. Since the pyridine bands are usually located at the same position the respective band values were choosen as the default values. 
+
     pyr_analyser.calculate_difference_spectra()
     pyr_analyser.find_py_adsorption_peaks()
+
 After finding the peaks we will fit them using Gaussian functions and also integrating them.
+
     pyr_analyser.fit_py_adsorption_peaks()
     pyr_analyser.integrate_fitted_peaks()
+
 Afterwards we can calculate the acid site density by providing the sample mass (mg) and the sample disc radius (cm).
+
     pyr_analyser.calculate_acid_sites(17.38)
+
 Finally we can create our PDF-report by creating an PDFReport object and parsing the analyser object as well as the your Material ID:
+
     from reports import PDFReport
     report = PDFReport(pyr_analyser, 'SH-00.002.00')
     report.build_report()
