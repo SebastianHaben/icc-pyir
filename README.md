@@ -28,10 +28,16 @@ from analyser import Analyser
 pyr_analyser = Analyser()
 ```
 
-Afterwards, we add a pre-adsorption and postadrosption spectrum.
+Afterwards, we add a pre-adsorption and postadrosption spectrum. For Windows use these comandas:
 ```
     pyr_analyser.add_pre_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_pre_adsorption.SPA")
     pyr_analyser.add_post_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_post_adsorption.SPA")
+```
+
+Under UNIX (Mac or Linux) use thes commands:
+```
+    pyr_analyser.add_pre_adsorption_spectrum("../test/data/SH-00.002.00/SH-00.002.00_pre_adsorption.SPA")
+    pyr_analyser.add_post_adsorption_spectrum("../test/data/SH-00.002.00/SH-00.002.00_post_adsorption.SPA")
 ```
 
 If you want you can add a normailzation step by using the `normalize_spectra` function and providing a band guess. This step is optional.
