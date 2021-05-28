@@ -3,21 +3,28 @@ This project's aim is to analyse Pyridine IR data by caluculating the BAS and LA
 
 ## Installation
 Prerequisites:
+
 * Python >=3.7
+
 Dependencies:
+
 * jinja2
 * lmfit
 * matplotlib
 * numpy
 * scipy
 * xhtml2pdf
+
 To install using git:
+
 `git clone https://github.com/SebastianHaben/icc-pyir.git`
 
 ## Usage
 icc-pyir is centered around the `Analyser` class. Firstly, load the import it from the `analyser` module and create an `pyr_analyser` object:
-    from analyser import Analyser
-    pyr_analyser = Analyser()
+```
+from analyser import Analyser
+pyr_analyser = Analyser()
+```
 Afterwards, we add a pre-adsorption and postadrosption spectrum.
     pyr_analyser.add_pre_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_pre_adsorption.SPA")
     pyr_analyser.add_post_adsorption_spectrum("..\\test\\data\\SH-00.002.00\\SH-00.002.00_post_adsorption.SPA")
