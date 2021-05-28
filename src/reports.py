@@ -80,27 +80,34 @@ class PDFReport:
                 get_template('template.html').render(
                     date_analysed=self.analysed_dt.strftime('%d.%m.%Y'),
                     date_recorded=self.recorded_dt.strftime('%d.%m.%Y'),
+                    material_id=self.material_id,
                     sample_weight=str(round(self.analyser.sample_weight, 4)) + ' g',
                     sample_radius=str(round(self.analyser.sample_disk_radius, 3)) + ' g',
                     bas_sites=str(round(self.analyser.bas['acid sites'], 2)) + ' mmol/g',
-                    las_sites=str(round(self.analyser.las['acid sites'])) + ' mmol/g', raw_data_plot=raw_data_plot,
+                    las_sites=str(round(self.analyser.las['acid sites'],2)) + ' mmol/g', raw_data_plot=raw_data_plot,
                     norm_data_plot=norm_data_plot, fitingt_data_plot=fit_data_plot, fitting_numb=4, bas=bas, las=las)
         else:
             html = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='.')).get_template(
                 'template.html').render(
                 date_analysed=self.analysed_dt.strftime('%d.%m.%Y'),
                 date_recorded=self.recorded_dt.strftime('%d.%m.%Y'),
-                ssample_weight=str(round(self.analyser.sample_weight, 4)) + ' g',
-                    sample_radius=str(round(self.analyser.sample_disk_radius, 3)) + ' g',
+                material_id=self.material_id,
+                sample_weight=str(round(self.analyser.sample_weight, 4)) + ' g',
+                sample_radius=str(round(self.analyser.sample_disk_radius, 3)) + ' cm',
                 bas_sites=str(round(self.analyser.bas['acid sites'], 2))+' mmol/g',
-                las_sites=str(round(self.analyser.las['acid sites']))+' mmol/g', raw_data_plot=raw_data_plot,
+                las_sites=str(round(self.analyser.las['acid sites'],2))+' mmol/g', raw_data_plot=raw_data_plot,
                 fitting_data_plot=fit_data_plot, fitting_numb=3, bas=bas, las=las)
         self.html = html
 
-    def save_report(self):
-        """Saves the report as .pdf file"""
-        dir_path = os.path.join("")
-        file_path = os.path.join(dir_path, '_'.join([self.material_id, 'report' + '.pdf')
+    def save_report(self, export_dir="..\\results\\output"):
+        """Saves the report as .pdf file
+        
+            Paramters:
+            ----------
+            export_dir : str
+                Path to prefered export dir."""
+        dir_path = os.path.join(export_dir)
+        file_path = os.path.join(dir_path, '_'.join([self.material_id, 'report']) + '.pdf')
         with open(file_path, 'w+b') as pdf:
             pisa.CreatePDF(src=self.html, dest=pdf)
 
